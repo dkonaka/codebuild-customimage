@@ -2,12 +2,22 @@ apiVersion: v1
 kind: Service
 metadata:
   name: eks-php
+  annotations:
+    # Note that the backend talks over HTTP.
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    # TODO: Fill in with the ARN of your certificate.
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert:  arn:aws:acm:us-east-1:660239311370:certificate/b35b1918-13dc-4535-8f05-837000e36b27
+    # Only run SSL on the port named "https" below.
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 spec:
   type: LoadBalancer
   ports:
     - port: 80
       targetPort: 80
       name: http
+    - name: https
+      port: 443
+      targetPort: 80
   selector:
     app: eks-php
 ---
